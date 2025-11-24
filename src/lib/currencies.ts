@@ -9,6 +9,7 @@ export const CURRENCIES = [
   { code: 'CNY', name: 'Chinese Yuan', symbol: '¥' },
   { code: 'INR', name: 'Indian Rupee', symbol: '₹' },
   { code: 'RUB', name: 'Russian Ruble', symbol: '₽' },
+  { code: 'BYN', name: 'Belarusian Ruble', symbol: 'Br' },
   { code: 'BRL', name: 'Brazilian Real', symbol: 'R$' },
   { code: 'ZAR', name: 'South African Rand', symbol: 'R' },
   { code: 'MXN', name: 'Mexican Peso', symbol: '$' },
