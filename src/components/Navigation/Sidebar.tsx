@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Wallet, TrendingUp, Calendar, Settings } from 'lucide-react';
+import { Home, Wallet, TrendingUp, Calendar, Settings, Tag, Target, BarChart3 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { storage } from '@/lib/storage';
@@ -10,12 +10,13 @@ import { formatCurrency } from '@/lib/utils';
 import { exchangeRates } from '@/lib/exchange-rates';
 import { useEffect, useState } from 'react';
 
-import { Tag } from 'lucide-react';
-
 const navItems = [
   { href: '/', icon: Home, label: 'Home' },
+  { href: '/accounts', icon: Wallet, label: 'Accounts' },
   { href: '/transactions', icon: TrendingUp, label: 'Transactions' },
   { href: '/planned', icon: Calendar, label: 'Planned' },
+  { href: '/budgets', icon: Target, label: 'Budgets' },
+  { href: '/analytics', icon: BarChart3, label: 'Analytics' },
   { href: '/categories', icon: Tag, label: 'Categories' },
   { href: '/settings', icon: Settings, label: 'Settings' },
 ];

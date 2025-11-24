@@ -54,7 +54,7 @@ export default function EditPlannedTransactionPage() {
 
   useEffect(() => {
     setCategories(storage.getData().categories.filter(c => 
-      type === 'transfer' || c.type === type || c.type === 'expense'
+      type === 'transfer' || c.type === type
     ));
   }, [type]);
 
@@ -84,7 +84,7 @@ export default function EditPlannedTransactionPage() {
   };
 
   const filteredCategories = categories.filter(c => 
-    type === 'transfer' || c.type === type || c.type === 'expense'
+    type === 'transfer' || c.type === type
   );
 
   return (

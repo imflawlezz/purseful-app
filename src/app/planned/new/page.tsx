@@ -31,7 +31,7 @@ export default function NewPlannedTransactionPage() {
   useEffect(() => {
     const data = storage.getData();
     setAccounts(data.accounts);
-    setCategories(data.categories.filter(c => c.type === type || c.type === 'expense'));
+    setCategories(data.categories.filter(c => c.type === type));
   }, [type]);
 
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function NewPlannedTransactionPage() {
   };
 
   const filteredCategories = categories.filter(c => 
-    type === 'transfer' || c.type === type || c.type === 'expense'
+    type === 'transfer' || c.type === type
   );
 
   return (

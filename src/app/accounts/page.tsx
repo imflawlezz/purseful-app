@@ -121,16 +121,17 @@ export default function AccountsPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 items-stretch">
           {accounts.map((account, index) => (
             <motion.div
               key={account.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
+              className="h-full"
             >
-              <Card className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
+              <Card className="hover:shadow-lg transition-shadow h-full flex flex-col">
+                <CardContent className="p-6 flex flex-col flex-1">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div
@@ -164,7 +165,7 @@ export default function AccountsPage() {
                       </Button>
                     </div>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2 flex-1">
                     <div>
                       <div className="text-sm text-muted-foreground">Balance</div>
                       <div className="text-2xl font-bold">

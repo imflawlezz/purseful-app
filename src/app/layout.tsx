@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Layout } from "@/components/Layout";
 import { PWARegister } from "@/components/PWARegister";
+import { PlannedTransactionProcessor } from "@/components/PlannedTransactionProcessor";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -14,16 +15,22 @@ export const metadata: Metadata = {
   title: "Purseful - Finance Tracking & Budget Planning",
   description: "Offline finance tracking and budget planning app",
   manifest: "/manifest.json",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
-    { media: "(prefers-color-scheme: dark)", color: "#0F172A" },
-  ],
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "Purseful",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
+    { media: "(prefers-color-scheme: dark)", color: "#0F172A" },
+  ],
 };
 
 export default function RootLayout({
@@ -36,6 +43,7 @@ export default function RootLayout({
       <body className={`${inter.variable} antialiased`}>
         <ThemeProvider>
           <PWARegister />
+          <PlannedTransactionProcessor />
           <Layout>{children}</Layout>
         </ThemeProvider>
       </body>

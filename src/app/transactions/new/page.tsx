@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import type { Transaction, Account, Category } from '@/types';
+import type { Transaction, Account, Category, PlannedTransaction } from '@/types';
 
 export default function NewTransactionPage() {
   const router = useRouter();
@@ -32,7 +32,8 @@ export default function NewTransactionPage() {
   useEffect(() => {
     const data = storage.getData();
     setAccounts(data.accounts);
-    setCategories(data.categories.filter(c => c.type === type || c.type === 'expense'));
+    // Only show categories that match the transaction type
+    setCategories(data.categories.filter(c => c.type === type));
     
     if (defaultAccountId && data.accounts.find(a => a.id === defaultAccountId)) {
       const account = data.accounts.find(a => a.id === defaultAccountId);
@@ -58,6 +59,34 @@ export default function NewTransactionPage() {
     if (type !== 'transfer' && !categoryId) return;
     if (type === 'transfer' && !toAccountId) return;
 
+    const transactionDate = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    transactionDate.setHours(0, 0, 0, 0);
+
+    // If date is in the future, create a planned transaction instead
+    if (transactionDate > today) {
+      const newPlannedTransaction: PlannedTransaction = {
+        id: generateId(),
+        accountId,
+        categoryId: type === 'transfer' ? '' : categoryId,
+        type,
+        amount: parseFloat(amount) || 0,
+        currency,
+        startDate: date,
+        endDate: date, // Same date for "once" frequency
+        frequency: 'once',
+        note,
+        toAccountId: type === 'transfer' ? toAccountId : undefined,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      storage.addPlannedTransaction(newPlannedTransaction);
+      router.push('/planned');
+      return;
+    }
+
     const newTransaction: Transaction = {
       id: generateId(),
       accountId,
@@ -77,7 +106,7 @@ export default function NewTransactionPage() {
   };
 
   const filteredCategories = categories.filter(c => 
-    type === 'transfer' || c.type === type || c.type === 'expense'
+    type === 'transfer' || c.type === type
   );
 
   return (
