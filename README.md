@@ -1,18 +1,22 @@
-# Purseful - Finance Tracking & Budget Planning App
+# Purseful
 
-A complete offline PWA (Progressive Web App) for finance tracking and budget planning, built with Next.js, Tailwind CSS, and TypeScript.
+Purseful is a finance tracking and budget planning app that runs fully offline thanks to its PWA architecture. It is built with Next.js, Tailwind CSS, and TypeScript.
+
+## Live Demo
+
+Try the latest deployment on Vercel: https://purseful-app.vercel.app/
 
 ## Features
 
-- 💰 **Account Management**: Create and manage multiple accounts with different currencies
-- 📊 **Transaction Tracking**: Track income, expenses, and transfers
-- 📅 **Planned Transactions**: Schedule recurring transactions
-- 🏷️ **Categories**: Organize transactions with custom categories
-- 💱 **Multi-Currency Support**: Support for multiple currencies with exchange rate conversion
-- 🌓 **Dark/Light Theme**: Beautiful themes with system preference detection
-- 📱 **Responsive Design**: Optimized for all screen sizes (mobile, tablet, desktop)
-- 💾 **Offline First**: All data stored locally, works completely offline
-- 📤 **Export/Import**: Backup and restore your data
+- **Account management** – create and manage multiple accounts with different currencies
+- **Transaction tracking** – log income, expenses, and transfers
+- **Planned transactions** – schedule future or recurring transactions
+- **Categories** – organize spending with custom categories
+- **Multi-currency support** – convert using the built-in exchange-rate helpers
+- **Theme support** – automatic dark/light theme with manual override
+- **Responsive UI** – optimized layouts for phones, tablets, and desktops
+- **Offline-first storage** – all data lives in the browser using local storage
+- **Data portability** – export and import data as JSON backups
 
 ## Tech Stack
 
@@ -37,13 +41,14 @@ npm run dev
 
 3. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-## PWA Icons
+## PWA Assets
 
-To complete the PWA setup, you need to add icon files:
-- `public/icon-192.png` (192x192 pixels)
-- `public/icon-512.png` (512x512 pixels)
-
-You can generate these using any image editor or online tool.
+The repository includes the required PWA assets:
+- `public/icon-192.png`
+- `public/icon-192-maskable.png`
+- `public/icon-512.png`
+- `public/icon-512-maskable.png`
+- `public/manifest.json`
 
 ## Building for Production
 
