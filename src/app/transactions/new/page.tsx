@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -14,6 +14,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import type { Transaction, Account, Category, PlannedTransaction } from '@/types';
 
 export default function NewTransactionPage() {
+  return (
+    <Suspense fallback={<div className="p-4">Loading...</div>}>
+      <NewTransactionContent />
+    </Suspense>
+  );
+}
+
+function NewTransactionContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const defaultAccountId = searchParams.get('accountId');
