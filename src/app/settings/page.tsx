@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react';
 import { Download, Upload, RefreshCw, Moon, Sun, Monitor } from 'lucide-react';
 import { storage } from '@/lib/storage';
 import { exchangeRates } from '@/lib/exchange-rates';
-import { theme as themeUtil } from '@/lib/theme';
+import { theme as themeUtil, type Theme } from '@/lib/theme';
 import { CURRENCIES } from '@/lib/currencies';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
-import type { Settings, Theme } from '@/types';
+import type { Settings } from '@/types';
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Settings>(storage.getData().settings);
