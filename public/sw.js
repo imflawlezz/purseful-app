@@ -7,6 +7,18 @@ const APP_SHELL = [
   '/icon-192-maskable.png',
   '/icon-512.png',
   '/icon-512-maskable.png',
+  '/transactions',
+  '/transactions/new',
+  '/accounts',
+  '/accounts/new',
+  '/budgets',
+  '/budgets/new',
+  '/categories',
+  '/categories/new',
+  '/planned',
+  '/planned/new',
+  '/settings',
+  '/analytics',
 ];
 
 self.addEventListener('install', (event) => {
@@ -38,16 +50,19 @@ self.addEventListener('fetch', (event) => {
 
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
-        .then((response) => {
+      (async () => {
+        try {
+          const response = await fetch(request);
           const copy = response.clone();
           caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, copy));
           return response;
-        })
-        .catch(async () => {
-          const cachedResponse = await caches.match(request);
+        } catch {
+          const cachedResponse = await caches.match(request, {
+            ignoreSearch: true,
+          });
           return cachedResponse || caches.match('/');
-        })
+        }
+      })()
     );
     return;
   }
