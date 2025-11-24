@@ -33,8 +33,8 @@ export function TabBar() {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-sm lg:hidden">
-        <div className="flex h-16 items-center justify-around">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-sm lg:hidden px-4 pb-safe">
+        <div className="flex h-16 items-center justify-around gap-2">
           {mainTabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = pathname === tab.href || pathname.startsWith(tab.href + '/');
