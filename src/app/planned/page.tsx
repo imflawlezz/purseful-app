@@ -119,8 +119,8 @@ export default function PlannedTransactionsPage() {
                           <div className="text-sm text-muted-foreground space-y-1">
                             <div>{account?.name}</div>
                             <div>
-                              {formatDate(transaction.startDate)}
-                              {transaction.endDate && ` - ${formatDate(transaction.endDate)}`}
+                              {formatDate(transaction.startDate, locale)}
+                              {transaction.endDate && ` - ${formatDate(transaction.endDate, locale)}`}
                             </div>
                             <div className="capitalize">{transaction.frequency}</div>
                           </div>

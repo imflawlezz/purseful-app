@@ -83,7 +83,7 @@ export default function AccountDetailPage() {
               </div>
               <div>
                 <h1 className="text-3xl font-bold">{account.name}</h1>
-                <p className="text-muted-foreground capitalize">{account.type}</p>
+                <p className="text-muted-foreground">{t(`accounts.accountTypes.${account.type}`, locale)}</p>
               </div>
             </div>
             <div className="flex gap-2">
@@ -181,7 +181,7 @@ export default function AccountDetailPage() {
                         <div>
                           <div className="font-medium">{transaction.note || t('common.transaction', locale)}</div>
                           <div className="text-sm text-muted-foreground">
-                            {formatDate(transaction.date)}
+                            {formatDate(transaction.date, locale)}
                           </div>
                         </div>
                       </div>

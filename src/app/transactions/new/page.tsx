@@ -33,6 +33,7 @@ function NewTransactionContent() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [templates, setTemplates] = useState<TransactionTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [loadedTemplateId, setLoadedTemplateId] = useState<string | null>(null);
   const [templateName, setTemplateName] = useState('');
   const [showSaveTemplate, setShowSaveTemplate] = useState(false);
   const [type, setType] = useState<Transaction['type']>('expense');
@@ -81,7 +82,7 @@ function NewTransactionContent() {
         if (template.toAccountId) {
           setToAccountId(template.toAccountId);
         }
-        setSelectedTemplate(''); // Reset selection
+        setLoadedTemplateId(template.id); // Keep track of which template was loaded
       }
     }
   }, [selectedTemplate, templates]);
@@ -159,8 +160,13 @@ function NewTransactionContent() {
             <div className="mb-4 pb-4 border-b border-border">
               <label className="text-sm font-medium mb-2 block">{t('transactions.loadTemplate', locale)}</label>
               <Select 
-                value={selectedTemplate} 
-                onChange={(e) => setSelectedTemplate(e.target.value)}
+                value={loadedTemplateId || selectedTemplate} 
+                onChange={(e) => {
+                  setSelectedTemplate(e.target.value);
+                  if (e.target.value === '') {
+                    setLoadedTemplateId(null);
+                  }
+                }}
               >
                 <option value="">{t('transactions.selectTemplate', locale)}</option>
                 {templates.map((template) => (
@@ -268,7 +274,7 @@ function NewTransactionContent() {
             </div>
 
             <div className="grid md:flex gap-2 pt-4">
-              <Link href="/transactions" className="flex-1">
+              <Link href="/transactions" className="flex">
                 <Button type="button" variant="outline" className="w-full">
                   {t('common.cancel', locale)}
                 </Button>
@@ -282,7 +288,7 @@ function NewTransactionContent() {
                 <Save className="mr-2 h-4 w-4" />
                 {t('transactions.saveTemplate', locale)}
               </Button>
-              <Button type="submit" className="flex-1">
+              <Button type="submit" className="flex">
                 {t('transactions.addTransaction', locale)}
               </Button>
             </div>

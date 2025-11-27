@@ -151,7 +151,7 @@ export default function AccountsPage() {
                       </div>
                       <div>
                         <h3 className="font-semibold text-lg">{account.name}</h3>
-                        <p className="text-sm text-muted-foreground capitalize">{account.type}</p>
+                        <p className="text-sm text-muted-foreground">{t(`accounts.accountTypes.${account.type}`, locale)}</p>
                       </div>
                     </div>
                     <div className="flex gap-2">

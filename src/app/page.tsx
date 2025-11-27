@@ -201,7 +201,7 @@ export default function Home() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="font-medium break-words">{account.name}</div>
-                          <div className="text-sm text-muted-foreground break-words">{account.type}</div>
+                          <div className="text-sm text-muted-foreground break-words">{t(`accounts.accountTypes.${account.type}`, locale)}</div>
                         </div>
                       </div>
                       <div className="text-right">
@@ -281,7 +281,7 @@ export default function Home() {
                               )}
                             </div>
                             <div className="text-sm text-muted-foreground break-words">
-                              {account?.name} • {formatDate(transaction.date)}
+                              {account?.name} • {formatDate(transaction.date, locale)}
                             </div>
                           </div>
                         </div>

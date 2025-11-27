@@ -196,8 +196,8 @@ export default function BudgetsPage() {
                       </div>
                       
                       <div className="text-xs text-muted-foreground pt-2 border-t border-border">
-                        {formatDate(budget.startDate)}
-                        {budget.endDate && ` - ${formatDate(budget.endDate)}`}
+                        {formatDate(budget.startDate, locale)}
+                        {budget.endDate && ` - ${formatDate(budget.endDate, locale)}`}
                       </div>
                     </div>
                   </CardContent>

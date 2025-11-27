@@ -103,7 +103,7 @@ export default function TransactionDetailPage() {
 
             <div>
               <div className="text-sm text-muted-foreground mb-1">{t('transactions.date', locale)}</div>
-              <div className="text-lg font-medium">{formatDate(transaction.date)}</div>
+              <div className="text-lg font-medium">{formatDate(transaction.date, locale)}</div>
             </div>
 
             {account && (

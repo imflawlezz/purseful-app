@@ -137,12 +137,12 @@ export default function TransactionsPage() {
         <Card>
           <CardContent className="p-12 text-center">
             <ArrowLeftRight className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-            <h3 className="text-xl font-semibold mb-2">No transactions yet</h3>
-            <p className="text-muted-foreground mb-6">Start tracking your finances by adding your first transaction</p>
+            <h3 className="text-xl font-semibold mb-2">{t('transactions.noTransactions', locale)}</h3>
+            <p className="text-muted-foreground mb-6">{t('transactions.startTracking', locale)}</p>
             <Link href="/transactions/new">
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
-                Add Transaction
+                {t('transactions.addTransaction', locale)}
               </Button>
             </Link>
           </CardContent>
@@ -198,7 +198,7 @@ export default function TransactionsPage() {
                                 </>
                               )}
                               {' • '}
-                              {formatDate(transaction.date)}
+                              {formatDate(transaction.date, locale)}
                             </div>
                           </div>
                         </div>
