@@ -92,7 +92,7 @@ export default function PlannedTransactionsPage() {
               >
                 <Card>
                   <CardContent className="p-6">
-                    <div className="flex items-start justify-between">
+                    <div className="grid md:flex items-start justify-between">
                       <div className="flex items-center gap-4 flex-1">
                         <div
                           className={`h-12 w-12 rounded-full flex items-center justify-center ${
