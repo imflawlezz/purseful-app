@@ -1,10 +1,13 @@
-import type { AppData, Account, Category, Transaction, PlannedTransaction, Budget, Settings } from '@/types';
+'use client';
+
+import type { AppData, Account, Category, Transaction, PlannedTransaction, Budget, Settings, TransactionTemplate } from '@/types';
 
 const STORAGE_KEY = 'purseful-app-data';
 
 const defaultSettings: Settings = {
   mainCurrency: 'USD',
   theme: 'system',
+  locale: 'en',
   exchangeRates: [],
 };
 
@@ -14,6 +17,7 @@ const defaultData: AppData = {
   transactions: [],
   plannedTransactions: [],
   budgets: [],
+  transactionTemplates: [],
   settings: defaultSettings,
 };
 
@@ -33,6 +37,7 @@ export const storage = {
         transactions: data.transactions || [],
         plannedTransactions: data.plannedTransactions || [],
         budgets: data.budgets || [],
+        transactionTemplates: data.transactionTemplates || [],
         settings: { ...defaultSettings, ...data.settings },
       };
     } catch (error) {
@@ -264,6 +269,28 @@ export const storage = {
   deleteBudget(id: string): void {
     const data = this.getData();
     data.budgets = data.budgets.filter(b => b.id !== id);
+    this.saveData(data);
+  },
+
+  // Transaction template operations
+  addTransactionTemplate(template: TransactionTemplate): void {
+    const data = this.getData();
+    data.transactionTemplates.push(template);
+    this.saveData(data);
+  },
+
+  updateTransactionTemplate(id: string, updates: Partial<TransactionTemplate>): void {
+    const data = this.getData();
+    const index = data.transactionTemplates.findIndex(t => t.id === id);
+    if (index !== -1) {
+      data.transactionTemplates[index] = { ...data.transactionTemplates[index], ...updates, updatedAt: new Date().toISOString() };
+      this.saveData(data);
+    }
+  },
+
+  deleteTransactionTemplate(id: string): void {
+    const data = this.getData();
+    data.transactionTemplates = data.transactionTemplates.filter(t => t.id !== id);
     this.saveData(data);
   },
 
