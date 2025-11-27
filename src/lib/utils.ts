@@ -15,18 +15,28 @@ export function formatCurrency(amount: number, currency: string): string {
   return formatter.format(amount);
 }
 
-export function formatDate(date: string | Date): string {
+export function formatDate(date: string | Date, locale: string = 'en'): string {
   const d = typeof date === 'string' ? new Date(date) : date;
-  return new Intl.DateTimeFormat('en-US', {
+  const localeMap: Record<string, string> = {
+    'en': 'en-US',
+    'pl': 'pl-PL',
+    'ru': 'ru-RU',
+  };
+  return new Intl.DateTimeFormat(localeMap[locale] || 'en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
   }).format(d);
 }
 
-export function formatDateShort(date: string | Date): string {
+export function formatDateShort(date: string | Date, locale: string = 'en'): string {
   const d = typeof date === 'string' ? new Date(date) : date;
-  return new Intl.DateTimeFormat('en-US', {
+  const localeMap: Record<string, string> = {
+    'en': 'en-US',
+    'pl': 'pl-PL',
+    'ru': 'ru-RU',
+  };
+  return new Intl.DateTimeFormat(localeMap[locale] || 'en-US', {
     month: 'short',
     day: 'numeric',
   }).format(d);
