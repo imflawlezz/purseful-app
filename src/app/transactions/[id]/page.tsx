@@ -9,9 +9,12 @@ import { formatCurrency, formatDate } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
+import { useLocale } from '@/hooks/useLocale';
+import { t, getCategoryName } from '@/lib/i18n';
 import type { Transaction, Account, Category } from '@/types';
 
 export default function TransactionDetailPage() {
+  const { locale } = useLocale();
   const params = useParams();
   const router = useRouter();
   const transactionId = params.id as string;
@@ -55,7 +58,7 @@ export default function TransactionDetailPage() {
     <div className="container mx-auto p-4 lg:p-8 max-w-2xl">
       <Link href="/transactions" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
         <ArrowLeft className="h-4 w-4" />
-        Back to Transactions
+        {t('transactions.backToTransactions', locale)}
       </Link>
 
       <Card>
@@ -63,33 +66,33 @@ export default function TransactionDetailPage() {
           <div className="flex items-start justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold mb-2">
-                {transaction.note || category?.name || 'Transaction'}
+                {transaction.note || (category ? getCategoryName(category, locale) : null) || t('common.transaction', locale)}
               </h1>
               <div className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
                 isIncome ? 'bg-income/20 text-income' : 
                 isTransfer ? 'bg-transfer/20 text-transfer' : 
                 'bg-expense/20 text-expense'
               }`}>
-                {transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}
+                {t(`transactions.${transaction.type}`, locale)}
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="grid md:flex gap-2">
               <Link href={`/transactions/${transactionId}/edit`}>
                 <Button variant="outline">
                   <Edit className="mr-2 h-4 w-4" />
-                  Edit
+                  {t('common.edit', locale)}
                 </Button>
               </Link>
               <Button variant="danger" onClick={() => setDeleteDialogOpen(true)}>
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                {t('common.delete', locale)}
               </Button>
             </div>
           </div>
 
           <div className="space-y-4">
             <div>
-              <div className="text-sm text-muted-foreground mb-1">Amount</div>
+              <div className="text-sm text-muted-foreground mb-1">{t('transactions.amount', locale)}</div>
               <div className={`text-3xl font-bold ${
                 isIncome ? 'text-income' : isTransfer ? 'text-transfer' : 'text-expense'
               }`}>
@@ -99,14 +102,14 @@ export default function TransactionDetailPage() {
             </div>
 
             <div>
-              <div className="text-sm text-muted-foreground mb-1">Date</div>
+              <div className="text-sm text-muted-foreground mb-1">{t('transactions.date', locale)}</div>
               <div className="text-lg font-medium">{formatDate(transaction.date)}</div>
             </div>
 
             {account && (
               <div>
                 <div className="text-sm text-muted-foreground mb-1">
-                  {isTransfer ? 'From Account' : 'Account'}
+                  {isTransfer ? t('transactions.fromAccount', locale) : t('transactions.account', locale)}
                 </div>
                 <div className="text-lg font-medium">{account.name}</div>
               </div>
@@ -114,21 +117,21 @@ export default function TransactionDetailPage() {
 
             {isTransfer && toAccount && (
               <div>
-                <div className="text-sm text-muted-foreground mb-1">To Account</div>
+                <div className="text-sm text-muted-foreground mb-1">{t('transactions.toAccount', locale)}</div>
                 <div className="text-lg font-medium">{toAccount.name}</div>
               </div>
             )}
 
             {category && (
               <div>
-                <div className="text-sm text-muted-foreground mb-1">Category</div>
-                <div className="text-lg font-medium">{category.name}</div>
+                <div className="text-sm text-muted-foreground mb-1">{t('transactions.category', locale)}</div>
+                <div className="text-lg font-medium">{getCategoryName(category, locale)}</div>
               </div>
             )}
 
             {transaction.note && (
               <div>
-                <div className="text-sm text-muted-foreground mb-1">Note</div>
+                <div className="text-sm text-muted-foreground mb-1">{t('transactions.note', locale)}</div>
                 <div className="text-lg">{transaction.note}</div>
               </div>
             )}
@@ -139,15 +142,15 @@ export default function TransactionDetailPage() {
       <Dialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
-        title="Delete Transaction"
+        title={t('transactions.deleteTransaction', locale)}
       >
-        <p className="mb-4">Are you sure you want to delete this transaction?</p>
+        <p className="mb-4">{t('transactions.deleteTransactionConfirm', locale)}</p>
         <div className="flex gap-2 justify-end">
           <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-            Cancel
+            {t('common.cancel', locale)}
           </Button>
           <Button variant="danger" onClick={handleDelete}>
-            Delete
+            {t('common.delete', locale)}
           </Button>
         </div>
       </Dialog>

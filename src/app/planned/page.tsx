@@ -9,9 +9,12 @@ import { formatCurrency, formatDate } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
+import { useLocale } from '@/hooks/useLocale';
+import { t, getCategoryName } from '@/lib/i18n';
 import type { PlannedTransaction, Account, Category } from '@/types';
 
 export default function PlannedTransactionsPage() {
+  const { locale } = useLocale();
   const [plannedTransactions, setPlannedTransactions] = useState<PlannedTransaction[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -47,13 +50,13 @@ export default function PlannedTransactionsPage() {
   const getCategory = (id: string) => categories.find(c => c.id === id);
 
   return (
-    <div className="container mx-auto p-4 lg:p-8 max-w-7xl">
+    <div className="container mx-auto p-4 lg:p-8 max-w-7xl overflow-x-hidden">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Planned Transactions</h1>
+        <h1 className="text-3xl font-bold">{t('planned.title', locale)}</h1>
         <Link href="/planned/new">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            Add Planned Transaction
+            {t('planned.addPlanned', locale)}
           </Button>
         </Link>
       </div>
@@ -62,12 +65,12 @@ export default function PlannedTransactionsPage() {
         <Card>
           <CardContent className="p-12 text-center">
             <Calendar className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-            <h3 className="text-xl font-semibold mb-2">No planned transactions yet</h3>
-            <p className="text-muted-foreground mb-6">Plan your recurring transactions</p>
+            <h3 className="text-xl font-semibold mb-2">{t('planned.noPlanned', locale)}</h3>
+            <p className="text-muted-foreground mb-6">{t('planned.createFirst', locale)}</p>
             <Link href="/planned/new">
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
-                Add Planned Transaction
+                {t('planned.addPlanned', locale)}
               </Button>
             </Link>
           </CardContent>
@@ -104,9 +107,14 @@ export default function PlannedTransactionsPage() {
                             <TrendingDown className="h-6 w-6 text-expense" />
                           )}
                         </div>
-                        <div className="flex-1">
-                          <div className="font-semibold text-lg mb-1">
-                            {transaction.note || category?.name || 'Planned Transaction'}
+                        <div className="flex-1 min-w-0">
+                          <div className="font-semibold text-lg mb-1 break-words">
+                            {category ? getCategoryName(category, locale) : 'Planned Transaction'}
+                            {transaction.note && (
+                              <span className="text-muted-foreground text-sm ml-2 break-words">
+                                {transaction.note}
+                              </span>
+                            )}
                           </div>
                           <div className="text-sm text-muted-foreground space-y-1">
                             <div>{account?.name}</div>
@@ -155,9 +163,9 @@ export default function PlannedTransactionsPage() {
           setDeleteDialogOpen(false);
           setTransactionToDelete(null);
         }}
-        title="Delete Planned Transaction"
+        title={t('planned.deletePlanned', locale)}
       >
-        <p className="mb-4">Are you sure you want to delete this planned transaction?</p>
+        <p className="mb-4">{t('planned.deleteConfirm', locale)}</p>
         <div className="flex gap-2 justify-end">
           <Button
             variant="outline"
@@ -166,10 +174,10 @@ export default function PlannedTransactionsPage() {
               setTransactionToDelete(null);
             }}
           >
-            Cancel
+            {t('common.cancel', locale)}
           </Button>
           <Button variant="danger" onClick={confirmDelete}>
-            Delete
+            {t('common.delete', locale)}
           </Button>
         </div>
       </Dialog>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Download, Upload, RefreshCw, Moon, Sun, Monitor } from 'lucide-react';
+import { Download, Upload, RefreshCw, Moon, Sun, Monitor, Globe } from 'lucide-react';
 import { storage } from '@/lib/storage';
 import { exchangeRates } from '@/lib/exchange-rates';
 import { theme as themeUtil, type Theme } from '@/lib/theme';
@@ -10,9 +10,12 @@ import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
+import { useLocale } from '@/hooks/useLocale';
+import { t } from '@/lib/i18n';
 import type { Settings } from '@/types';
 
 export default function SettingsPage() {
+  const { locale, changeLocale } = useLocale();
   const [settings, setSettings] = useState<Settings>(storage.getData().settings);
   const [currentTheme, setCurrentTheme] = useState<Theme>(themeUtil.getTheme());
   const [isUpdatingRates, setIsUpdatingRates] = useState(false);
@@ -69,10 +72,10 @@ export default function SettingsPage() {
         reader.onload = (event) => {
           const content = event.target?.result as string;
           if (storage.importData(content)) {
-            alert('Data imported successfully!');
+            alert(t('settings.importSuccess', locale));
             window.location.reload();
           } else {
-            alert('Failed to import data. Please check the file format.');
+            alert(t('settings.importFailed', locale));
           }
         };
         reader.readAsText(file);
@@ -83,24 +86,24 @@ export default function SettingsPage() {
 
   return (
     <div className="container mx-auto p-4 lg:p-8 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-6">Settings</h1>
+      <h1 className="text-3xl font-bold mb-6">{t('settings.title', locale)}</h1>
 
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Appearance</CardTitle>
+            <CardTitle>{t('settings.appearance', locale)}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Theme</label>
-              <div className="flex gap-2">
+              <label className="text-sm font-medium mb-2 block">{t('settings.theme', locale)}</label>
+              <div className="grid md:flex gap-2">
                 <Button
                   variant={currentTheme === 'light' ? 'primary' : 'outline'}
                   onClick={() => handleThemeChange('light')}
                   className="flex-1"
                 >
                   <Sun className="mr-2 h-4 w-4" />
-                  Light
+                  {t('settings.light', locale)}
                 </Button>
                 <Button
                   variant={currentTheme === 'dark' ? 'primary' : 'outline'}
@@ -108,7 +111,7 @@ export default function SettingsPage() {
                   className="flex-1"
                 >
                   <Moon className="mr-2 h-4 w-4" />
-                  Dark
+                  {t('settings.dark', locale)}
                 </Button>
                 <Button
                   variant={currentTheme === 'system' ? 'primary' : 'outline'}
@@ -116,7 +119,7 @@ export default function SettingsPage() {
                   className="flex-1"
                 >
                   <Monitor className="mr-2 h-4 w-4" />
-                  System
+                  {t('settings.system', locale)}
                 </Button>
               </div>
             </div>
@@ -125,11 +128,33 @@ export default function SettingsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Currency</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Globe className="h-5 w-5" />
+              {t('settings.language', locale)}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Main Currency</label>
+              <label className="text-sm font-medium mb-2 block">{t('settings.language', locale)}</label>
+              <Select
+                value={locale}
+                onChange={(e) => changeLocale(e.target.value as typeof locale)}
+              >
+                <option value="en">{t('settings.languageNames.en', locale)}</option>
+                <option value="pl">{t('settings.languageNames.pl', locale)}</option>
+                <option value="ru">{t('settings.languageNames.ru', locale)}</option>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('settings.currency', locale)}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">{t('settings.mainCurrency', locale)}</label>
               <Select
                 value={settings.mainCurrency}
                 onChange={(e) => handleMainCurrencyChange(e.target.value)}
@@ -146,17 +171,17 @@ export default function SettingsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Exchange Rates</CardTitle>
+            <CardTitle>{t('settings.exchangeRates', locale)}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <div className="font-medium">Update Exchange Rates</div>
+                  <div className="font-medium">{t('settings.updateExchangeRates', locale)}</div>
                   <div className="text-sm text-muted-foreground">
                     {settings.lastExchangeRateUpdate
-                      ? `Last updated: ${new Date(settings.lastExchangeRateUpdate).toLocaleString()}`
-                      : 'Never updated'}
+                      ? `${t('settings.lastUpdatedPrefix', locale)} ${new Date(settings.lastExchangeRateUpdate).toLocaleString()}`
+                      : t('settings.neverUpdated', locale)}
                   </div>
                 </div>
                 <Button
@@ -165,11 +190,11 @@ export default function SettingsPage() {
                   variant="outline"
                 >
                   <RefreshCw className={`mr-2 h-4 w-4 ${isUpdatingRates ? 'animate-spin' : ''}`} />
-                  Update Rates
+                  {t('settings.updateRates', locale)}
                 </Button>
               </div>
               <p className="text-sm text-muted-foreground">
-                Exchange rates are fetched when you have an internet connection and cached for offline use.
+                {t('settings.ratesDescription', locale)}
               </p>
             </div>
           </CardContent>
@@ -177,27 +202,27 @@ export default function SettingsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Data Management</CardTitle>
+            <CardTitle>{t('settings.dataManagement', locale)}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <div className="font-medium mb-2">Export Data</div>
+              <div className="font-medium mb-2">{t('settings.exportData', locale)}</div>
               <p className="text-sm text-muted-foreground mb-4">
-                Download a backup of all your data as a JSON file.
+                {t('settings.exportDescription', locale)}
               </p>
               <Button onClick={handleExport} variant="outline">
                 <Download className="mr-2 h-4 w-4" />
-                Export Data
+                {t('settings.exportData', locale)}
               </Button>
             </div>
             <div className="pt-4 border-t border-border">
-              <div className="font-medium mb-2">Import Data</div>
+              <div className="font-medium mb-2">{t('settings.importData', locale)}</div>
               <p className="text-sm text-muted-foreground mb-4">
-                Restore your data from a previously exported backup file. This will replace all current data.
+                {t('settings.importDescription', locale)}
               </p>
               <Button onClick={handleImport} variant="outline">
                 <Upload className="mr-2 h-4 w-4" />
-                Import Data
+                {t('settings.importData', locale)}
               </Button>
             </div>
           </CardContent>

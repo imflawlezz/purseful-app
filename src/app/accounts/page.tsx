@@ -11,6 +11,8 @@ import { formatCurrency } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
+import { useLocale } from '@/hooks/useLocale';
+import { t } from '@/lib/i18n';
 import type { Account } from '@/types';
 
 const accountTypes = [
@@ -32,6 +34,7 @@ const accountColors = [
 ];
 
 export default function AccountsPage() {
+  const { locale } = useLocale();
   const router = useRouter();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [mainCurrency, setMainCurrency] = useState('USD');
@@ -72,13 +75,16 @@ export default function AccountsPage() {
   }, 0);
 
   return (
-    <div className="container mx-auto p-4 lg:p-8 max-w-7xl">
+    <div className="container mx-auto p-4 lg:p-8 max-w-7xl overflow-x-hidden">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Accounts</h1>
+        <div>
+          <h1 className="text-3xl font-bold">{t('accounts.title', locale)}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t('accounts.accountCount', locale, { count: accounts.length })}</p>
+        </div>
         <Link href="/accounts/new">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            Add Account
+            {t('accounts.addAccount', locale)}
           </Button>
         </Link>
       </div>
@@ -88,7 +94,7 @@ export default function AccountsPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-sm text-muted-foreground mb-1">Total Balance</div>
+                <div className="text-sm text-muted-foreground mb-1">{t('accounts.totalBalance', locale)}</div>
                 <div className="text-3xl font-bold">{formatCurrency(totalInMainCurrency, mainCurrency)}</div>
               </div>
               {Object.keys(totalByCurrency).length > 1 && (
@@ -110,12 +116,12 @@ export default function AccountsPage() {
         <Card>
           <CardContent className="p-12 text-center">
             <Wallet className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-            <h3 className="text-xl font-semibold mb-2">No accounts yet</h3>
-            <p className="text-muted-foreground mb-6">Create your first account to get started</p>
+            <h3 className="text-xl font-semibold mb-2">{t('accounts.noAccounts', locale)}</h3>
+            <p className="text-muted-foreground mb-6">{t('accounts.createFirst', locale)}</p>
             <Link href="/accounts/new">
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
-                Create Account
+                {t('accounts.createAccount', locale)}
               </Button>
             </Link>
           </CardContent>
@@ -167,7 +173,7 @@ export default function AccountsPage() {
                   </div>
                   <div className="space-y-2 flex-1">
                     <div>
-                      <div className="text-sm text-muted-foreground">Balance</div>
+                      <div className="text-sm text-muted-foreground">{t('accounts.balance', locale)}</div>
                       <div className="text-2xl font-bold">
                         {formatCurrency(account.balance, account.currency)}
                       </div>
@@ -184,7 +190,7 @@ export default function AccountsPage() {
                   <div className="mt-4 pt-4 border-t border-border">
                     <Link href={`/accounts/${account.id}`}>
                       <Button variant="outline" className="w-full">
-                        View Details
+                        {t('accounts.viewDetails', locale)}
                       </Button>
                     </Link>
                   </div>
@@ -201,9 +207,9 @@ export default function AccountsPage() {
           setDeleteDialogOpen(false);
           setAccountToDelete(null);
         }}
-        title="Delete Account"
+        title={t('accounts.deleteAccount', locale)}
       >
-        <p className="mb-4">Are you sure you want to delete this account? All related transactions will also be deleted.</p>
+        <p className="mb-4">{t('accounts.deleteConfirm', locale)}</p>
         <div className="flex gap-2 justify-end">
           <Button
             variant="outline"
@@ -212,10 +218,10 @@ export default function AccountsPage() {
               setAccountToDelete(null);
             }}
           >
-            Cancel
+            {t('common.cancel', locale)}
           </Button>
           <Button variant="danger" onClick={confirmDelete}>
-            Delete
+            {t('common.delete', locale)}
           </Button>
         </div>
       </Dialog>

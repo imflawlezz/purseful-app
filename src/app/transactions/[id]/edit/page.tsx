@@ -10,9 +10,12 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { useLocale } from '@/hooks/useLocale';
+import { t, getCategoryName } from '@/lib/i18n';
 import type { Transaction, Account, Category } from '@/types';
 
 export default function EditTransactionPage() {
+  const { locale } = useLocale();
   const params = useParams();
   const router = useRouter();
   const transactionId = params.id as string;
@@ -82,33 +85,33 @@ export default function EditTransactionPage() {
   );
 
   return (
-    <div className="container mx-auto p-4 lg:p-8 max-w-2xl">
+    <div className="container mx-auto p-4 lg:p-8 max-w-2xl overflow-x-hidden">
       <Link href={`/transactions/${transactionId}`} className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
         <ArrowLeft className="h-4 w-4" />
-        Back to Transaction
+        {t('transactions.backToTransaction', locale)}
       </Link>
 
       <Card>
         <CardHeader>
-          <CardTitle>Edit Transaction</CardTitle>
+          <CardTitle>{t('transactions.editTransaction', locale)}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Type</label>
+              <label className="text-sm font-medium mb-2 block">{t('transactions.type', locale)}</label>
               <Select value={type} onChange={(e) => setType(e.target.value as Transaction['type'])} required>
-                <option value="expense">Expense</option>
-                <option value="income">Income</option>
-                <option value="transfer">Transfer</option>
+                <option value="expense">{t('transactions.expense', locale)}</option>
+                <option value="income">{t('transactions.income', locale)}</option>
+                <option value="transfer">{t('transactions.transfer', locale)}</option>
               </Select>
             </div>
 
             <div>
               <label className="text-sm font-medium mb-2 block">
-                {type === 'transfer' ? 'From Account' : 'Account'}
+                {type === 'transfer' ? t('transactions.fromAccount', locale) : t('transactions.account', locale)}
               </label>
               <Select value={accountId} onChange={(e) => setAccountId(e.target.value)} required>
-                <option value="">Select account</option>
+                <option value="">{t('transactions.allAccounts', locale).replace('All ', 'Select ')}</option>
                 {accounts.map((account) => (
                   <option key={account.id} value={account.id}>
                     {account.name} ({account.currency})
@@ -119,9 +122,9 @@ export default function EditTransactionPage() {
 
             {type === 'transfer' && (
               <div>
-                <label className="text-sm font-medium mb-2 block">To Account</label>
+                <label className="text-sm font-medium mb-2 block">{t('transactions.toAccount', locale)}</label>
                 <Select value={toAccountId} onChange={(e) => setToAccountId(e.target.value)} required>
-                  <option value="">Select account</option>
+                  <option value="">{t('transactions.allAccounts', locale).replace('All ', 'Select ')}</option>
                   {accounts.filter(a => a.id !== accountId).map((account) => (
                     <option key={account.id} value={account.id}>
                       {account.name} ({account.currency})
@@ -133,12 +136,12 @@ export default function EditTransactionPage() {
 
             {type !== 'transfer' && (
               <div>
-                <label className="text-sm font-medium mb-2 block">Category</label>
+                <label className="text-sm font-medium mb-2 block">{t('transactions.category', locale)}</label>
                 <Select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required>
-                  <option value="">Select category</option>
+                  <option value="">{t('transactions.category', locale)}...</option>
                   {filteredCategories.map((category) => (
                     <option key={category.id} value={category.id}>
-                      {category.name}
+                      {getCategoryName(category, locale)}
                     </option>
                   ))}
                 </Select>
@@ -146,7 +149,7 @@ export default function EditTransactionPage() {
             )}
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Amount</label>
+              <label className="text-sm font-medium mb-2 block">{t('transactions.amount', locale)}</label>
               <Input
                 type="number"
                 step="0.01"
@@ -159,18 +162,19 @@ export default function EditTransactionPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Currency</label>
-              <Select value={currency} onChange={(e) => setCurrency(e.target.value)} required>
+              <label className="text-sm font-medium mb-2 block">{t('transactions.currency', locale)}</label>
+              <Select value={currency} onChange={(e) => setCurrency(e.target.value)} required disabled>
                 {CURRENCIES.map((c) => (
                   <option key={c.code} value={c.code}>
                     {c.code} - {c.name}
                   </option>
                 ))}
               </Select>
+              <p className="text-xs text-muted-foreground mt-1">{t('transactions.currencyLocked', locale)}</p>
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Date</label>
+              <label className="text-sm font-medium mb-2 block">{t('transactions.date', locale)}</label>
               <Input
                 type="date"
                 value={date}
@@ -180,22 +184,22 @@ export default function EditTransactionPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Note (optional)</label>
+              <label className="text-sm font-medium mb-2 block">{t('transactions.note', locale)}</label>
               <Input
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                placeholder="Add a note..."
+                placeholder={t('transactions.notePlaceholder', locale)}
               />
             </div>
 
             <div className="flex gap-2 pt-4">
               <Link href={`/transactions/${transactionId}`} className="flex-1">
                 <Button type="button" variant="outline" className="w-full">
-                  Cancel
+                  {t('common.cancel', locale)}
                 </Button>
               </Link>
               <Button type="submit" className="flex-1">
-                Save Changes
+                {t('transactions.saveChanges', locale)}
               </Button>
             </div>
           </form>

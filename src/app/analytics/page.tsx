@@ -1,15 +1,21 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { TrendingUp, TrendingDown, Target, Calendar } from 'lucide-react';
+import { TrendingUp, TrendingDown, Target, Calendar, PieChart as PieChartIcon, BarChart3 } from 'lucide-react';
 import { storage } from '@/lib/storage';
 import { analytics } from '@/lib/analytics';
+import { exchangeRates } from '@/lib/exchange-rates';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Select } from '@/components/ui/Select';
+import { PieChart } from '@/components/ui/PieChart';
+import { BarChart } from '@/components/ui/BarChart';
+import { useLocale } from '@/hooks/useLocale';
+import { t, getCategoryName } from '@/lib/i18n';
 import type { Category } from '@/types';
 
 export default function AnalyticsPage() {
+  const { locale } = useLocale();
   const [mainCurrency, setMainCurrency] = useState('USD');
   const [period, setPeriod] = useState<'week' | 'month' | 'quarter' | 'year'>('month');
   const [forecast, setForecast] = useState({
@@ -30,6 +36,12 @@ export default function AnalyticsPage() {
     }[]
   >([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [transactionData, setTransactionData] = useState({
+    income: 0,
+    expense: 0,
+    incomeByCategory: {} as Record<string, number>,
+    expenseByCategory: {} as Record<string, number>,
+  });
 
   useEffect(() => {
     const updateData = () => {
@@ -63,6 +75,9 @@ export default function AnalyticsPage() {
 
       const budgetData = analytics.getBudgetForecast(startDate, endDate);
       setBudgetForecast(budgetData);
+
+      const actualData = analytics.getTransactionData(startDate, endDate);
+      setTransactionData(actualData);
     };
 
     updateData();
@@ -73,18 +88,18 @@ export default function AnalyticsPage() {
   const getCategory = (id: string) => categories.find(c => c.id === id);
 
   return (
-    <div className="container mx-auto p-4 lg:p-8 max-w-7xl">
-      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-3xl font-bold">Analytics & Forecasts</h1>
+    <div className="container mx-auto p-4 lg:p-8 max-w-7xl overflow-x-hidden">
+      <div className="mb-6 grid sm:flex sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h1 className="text-3xl font-bold">{t('analytics.title', locale)}</h1>
         <Select
           value={period}
           onChange={(e) => setPeriod(e.target.value as typeof period)}
-          className="w-48"
+          className=""
         >
-          <option value="week">This Week</option>
-          <option value="month">This Month</option>
-          <option value="quarter">This Quarter</option>
-          <option value="year">This Year</option>
+          <option value="week">{t('analytics.thisWeek', locale)}</option>
+          <option value="month">{t('analytics.thisMonth', locale)}</option>
+          <option value="quarter">{t('analytics.thisQuarter', locale)}</option>
+          <option value="year">{t('analytics.thisYear', locale)}</option>
         </Select>
       </div>
 
@@ -93,7 +108,7 @@ export default function AnalyticsPage() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-income" />
-              Forecasted Income
+              {t('analytics.forecastedIncome', locale)}
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1">
@@ -107,7 +122,7 @@ export default function AnalyticsPage() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <TrendingDown className="h-4 w-4 text-expense" />
-              Forecasted Expense
+              {t('analytics.forecastedExpense', locale)}
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1">
@@ -120,7 +135,7 @@ export default function AnalyticsPage() {
         <Card className="h-full flex flex-col">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Net Forecast
+              {t('analytics.netForecast', locale)}
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1">
@@ -135,7 +150,7 @@ export default function AnalyticsPage() {
         <Card className="h-full flex flex-col">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Budgets Tracked
+              {t('analytics.budgetsTracked', locale)}
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1">
@@ -151,7 +166,7 @@ export default function AnalyticsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Target className="h-5 w-5" />
-              Budget Forecasts
+              {t('analytics.budgetForecasts', locale)}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -164,26 +179,26 @@ export default function AnalyticsPage() {
                   <div key={bf.budgetId} className="p-4 rounded-lg border border-border">
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <div className="font-semibold text-lg">{category?.name || 'Unknown'}</div>
+                        <div className="font-semibold text-lg">{category ? getCategoryName(category, locale) : t('common.unknown', locale)}</div>
                         <div className="text-sm text-muted-foreground">
-                          Budget: {formatCurrency(bf.budgetAmount, mainCurrency)}
+                          {t('analytics.budget', locale)}: {formatCurrency(bf.budgetAmount, mainCurrency)}
                         </div>
                       </div>
                       <div className={`text-right ${isOverBudget ? 'text-expense' : 'text-income'}`}>
                         <div className="text-lg font-bold">
                           {formatCurrency(bf.remaining, mainCurrency)}
                         </div>
-                        <div className="text-xs text-muted-foreground">remaining</div>
+                        <div className="text-xs text-muted-foreground">{t('analytics.remaining', locale)}</div>
                       </div>
                     </div>
                     
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Current Spending</span>
+                        <span className="text-muted-foreground">{t('analytics.currentSpending', locale)}</span>
                         <span>{formatCurrency(bf.currentSpending, mainCurrency)}</span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Forecasted Additional</span>
+                        <span className="text-muted-foreground">{t('analytics.forecastedAdditional', locale)}</span>
                         <span>{formatCurrency(bf.forecastedSpending, mainCurrency)}</span>
                       </div>
                       <div className="pt-2">
@@ -196,7 +211,7 @@ export default function AnalyticsPage() {
                           />
                         </div>
                         <div className="text-xs text-muted-foreground mt-1 text-center">
-                          {bf.percentage.toFixed(1)}% of budget
+                          {bf.percentage.toFixed(1)}% {t('analytics.ofBudget', locale)}
                         </div>
                       </div>
                     </div>
@@ -208,12 +223,122 @@ export default function AnalyticsPage() {
         </Card>
       )}
 
+      <div className="grid gap-6 lg:grid-cols-2 mb-6">
+        {Object.keys(transactionData.expenseByCategory).length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <PieChartIcon className="h-5 w-5" />
+                {t('analytics.expenseByCategory', locale)}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PieChart
+                data={Object.entries(transactionData.expenseByCategory)
+                  .map(([categoryId, value]) => {
+                    const category = getCategory(categoryId);
+                    return {
+                      label: category ? getCategoryName(category, locale) : t('common.unknown', locale),
+                      value,
+                      color: category?.color || '#64748B',
+                    };
+                  })
+                  .sort((a, b) => b.value - a.value)}
+                size={200}
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {Object.keys(transactionData.incomeByCategory).length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <PieChartIcon className="h-5 w-5" />
+                {t('analytics.incomeByCategory', locale)}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PieChart
+                data={Object.entries(transactionData.incomeByCategory)
+                  .map(([categoryId, value]) => {
+                    const category = getCategory(categoryId);
+                    return {
+                      label: category ? getCategoryName(category, locale) : t('common.unknown', locale),
+                      value,
+                      color: category?.color || '#64748B',
+                    };
+                  })
+                  .sort((a, b) => b.value - a.value)}
+                size={200}
+              />
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2 mb-6">
+        {Object.keys(transactionData.expenseByCategory).length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                {t('analytics.topExpenses', locale)}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <BarChart
+                data={Object.entries(transactionData.expenseByCategory)
+                  .map(([categoryId, value]) => {
+                    const category = getCategory(categoryId);
+                    return {
+                      label: category ? getCategoryName(category, locale) : t('common.unknown', locale),
+                      value,
+                      color: category?.color || '#64748B',
+                    };
+                  })
+                  .sort((a, b) => b.value - a.value)
+                  .slice(0, 10)}
+                currency={mainCurrency}
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {Object.keys(transactionData.incomeByCategory).length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                {t('analytics.topIncomeSources', locale)}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <BarChart
+                data={Object.entries(transactionData.incomeByCategory)
+                  .map(([categoryId, value]) => {
+                    const category = getCategory(categoryId);
+                    return {
+                      label: category ? getCategoryName(category, locale) : t('common.unknown', locale),
+                      value,
+                      color: category?.color || '#64748B',
+                    };
+                  })
+                  .sort((a, b) => b.value - a.value)
+                  .slice(0, 10)}
+                currency={mainCurrency}
+              />
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
       {Object.keys(forecast.byCategory).length > 0 && (
-        <Card>
+        <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              Forecast by Category
+              {t('analytics.forecastByCategory', locale)}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -235,7 +360,7 @@ export default function AnalyticsPage() {
                         />
                       </div>
                       <div>
-                        <div className="font-medium">{category.name}</div>
+                        <div className="font-medium break-words">{getCategoryName(category, locale)}</div>
                         <div className="text-xs text-muted-foreground capitalize">{category.type}</div>
                       </div>
                     </div>

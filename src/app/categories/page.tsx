@@ -8,6 +8,8 @@ import { storage } from '@/lib/storage';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Dialog } from '@/components/ui/Dialog';
+import { useLocale } from '@/hooks/useLocale';
+import { t, getCategoryName } from '@/lib/i18n';
 import type { Category } from '@/types';
 
 const categoryIcons = [
@@ -21,6 +23,7 @@ const categoryColors = [
 ];
 
 export default function CategoriesPage() {
+  const { locale } = useLocale();
   const [categories, setCategories] = useState<Category[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
@@ -52,24 +55,24 @@ export default function CategoriesPage() {
   const expenseCategories = categories.filter(c => c.type === 'expense');
 
   return (
-    <div className="container mx-auto p-4 lg:p-8 max-w-7xl">
+    <div className="container mx-auto p-4 lg:p-8 max-w-7xl overflow-x-hidden">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Categories</h1>
+        <h1 className="text-3xl font-bold">{t('categories.title', locale)}</h1>
         <Link href="/categories/new">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            Add Category
+            {t('categories.addCategory', locale)}
           </Button>
         </Link>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div>
-          <h2 className="text-xl font-semibold mb-4">Income Categories</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('categories.incomeCategories', locale)}</h2>
           {incomeCategories.length === 0 ? (
             <Card>
               <CardContent className="p-8 text-center text-muted-foreground">
-                No income categories yet
+                {t('categories.noIncomeCategories', locale)}
               </CardContent>
             </Card>
           ) : (
@@ -94,7 +97,7 @@ export default function CategoriesPage() {
                               style={{ backgroundColor: category.color }}
                             />
                           </div>
-                          <div className="font-medium">{category.name}</div>
+                          <div className="font-medium break-words">{getCategoryName(category, locale)}</div>
                         </div>
                         <div className="flex gap-2">
                           <Link href={`/categories/${category.id}/edit`}>
@@ -120,11 +123,11 @@ export default function CategoriesPage() {
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold mb-4">Expense Categories</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('categories.expenseCategories', locale)}</h2>
           {expenseCategories.length === 0 ? (
             <Card>
               <CardContent className="p-8 text-center text-muted-foreground">
-                No expense categories yet
+                {t('categories.noExpenseCategories', locale)}
               </CardContent>
             </Card>
           ) : (
@@ -139,9 +142,9 @@ export default function CategoriesPage() {
                   <Card>
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
                           <div
-                            className="h-10 w-10 rounded-full flex items-center justify-center"
+                            className="h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0"
                             style={{ backgroundColor: category.color + '20' }}
                           >
                             <div
@@ -149,7 +152,7 @@ export default function CategoriesPage() {
                               style={{ backgroundColor: category.color }}
                             />
                           </div>
-                          <div className="font-medium">{category.name}</div>
+                          <div className="font-medium break-words">{getCategoryName(category, locale)}</div>
                         </div>
                         <div className="flex gap-2">
                           <Link href={`/categories/${category.id}/edit`}>
@@ -181,9 +184,9 @@ export default function CategoriesPage() {
           setDeleteDialogOpen(false);
           setCategoryToDelete(null);
         }}
-        title="Delete Category"
+        title={t('categories.deleteCategory', locale)}
       >
-        <p className="mb-4">Are you sure you want to delete this category?</p>
+        <p className="mb-4">{t('categories.deleteConfirm', locale)}</p>
         <div className="flex gap-2 justify-end">
           <Button
             variant="outline"
@@ -192,10 +195,10 @@ export default function CategoriesPage() {
               setCategoryToDelete(null);
             }}
           >
-            Cancel
+            {t('common.cancel', locale)}
           </Button>
           <Button variant="danger" onClick={confirmDelete}>
-            Delete
+            {t('common.delete', locale)}
           </Button>
         </div>
       </Dialog>

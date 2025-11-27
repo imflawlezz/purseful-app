@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { useLocale } from '@/hooks/useLocale';
+import { t } from '@/lib/i18n';
 import type { Category, TransactionType } from '@/types';
 
 const categoryColors = [
@@ -18,6 +20,7 @@ const categoryColors = [
 ];
 
 export default function NewCategoryPage() {
+  const { locale } = useLocale();
   const router = useRouter();
   const [name, setName] = useState('');
   const [type, setType] = useState<TransactionType>('expense');
@@ -44,35 +47,35 @@ export default function NewCategoryPage() {
     <div className="container mx-auto p-4 lg:p-8 max-w-2xl">
       <Link href="/categories" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
         <ArrowLeft className="h-4 w-4" />
-        Back to Categories
+        {t('categories.backToCategories', locale)}
       </Link>
 
       <Card>
         <CardHeader>
-          <CardTitle>Create New Category</CardTitle>
+          <CardTitle>{t('categories.createNewCategory', locale)}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Category Name</label>
+              <label className="text-sm font-medium mb-2 block">{t('categories.categoryName', locale)}</label>
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g., Groceries, Salary"
+                placeholder={t('categories.categoryNamePlaceholder', locale)}
                 required
               />
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Type</label>
+              <label className="text-sm font-medium mb-2 block">{t('categories.type', locale)}</label>
               <Select value={type} onChange={(e) => setType(e.target.value as TransactionType)} required>
-                <option value="expense">Expense</option>
-                <option value="income">Income</option>
+                <option value="expense">{t('transactions.expense', locale)}</option>
+                <option value="income">{t('transactions.income', locale)}</option>
               </Select>
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Color</label>
+              <label className="text-sm font-medium mb-2 block">{t('accounts.color', locale)}</label>
               <div className="flex gap-2 flex-wrap">
                 {categoryColors.map((c) => (
                   <button
@@ -80,9 +83,14 @@ export default function NewCategoryPage() {
                     type="button"
                     onClick={() => setColor(c)}
                     className={`h-10 w-10 rounded-full border-2 transition-all ${
-                      color === c ? 'border-foreground scale-110' : 'border-border'
+                      color === c ? 'border-foreground scale-110 ring-2 ring-offset-2 ring-offset-background' : 'border-border'
                     }`}
-                    style={{ backgroundColor: c }}
+                    style={{ 
+                      backgroundColor: c,
+                      ...(color === c ? { 
+                        boxShadow: `0 0 0 2px ${c}40, 0 0 0 4px var(--background), 0 0 0 6px ${c}60` 
+                      } : {})
+                    }}
                   />
                 ))}
               </div>
@@ -91,11 +99,11 @@ export default function NewCategoryPage() {
             <div className="flex gap-2 pt-4">
               <Link href="/categories" className="flex-1">
                 <Button type="button" variant="outline" className="w-full">
-                  Cancel
+                  {t('common.cancel', locale)}
                 </Button>
               </Link>
               <Button type="submit" className="flex-1">
-                Create Category
+                {t('categories.createCategory', locale)}
               </Button>
             </div>
           </form>

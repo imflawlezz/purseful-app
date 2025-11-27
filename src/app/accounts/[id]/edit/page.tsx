@@ -10,16 +10,9 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { useLocale } from '@/hooks/useLocale';
+import { t } from '@/lib/i18n';
 import type { Account } from '@/types';
-
-const accountTypes = [
-  { value: 'cash', label: 'Cash' },
-  { value: 'bank', label: 'Bank' },
-  { value: 'card', label: 'Card' },
-  { value: 'savings', label: 'Savings' },
-  { value: 'investment', label: 'Investment' },
-  { value: 'other', label: 'Other' },
-];
 
 const accountColors = [
   '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899',
@@ -27,6 +20,7 @@ const accountColors = [
 ];
 
 export default function EditAccountPage() {
+  const { locale } = useLocale();
   const params = useParams();
   const router = useRouter();
   const accountId = params.id as string;
@@ -35,6 +29,15 @@ export default function EditAccountPage() {
   const [type, setType] = useState<Account['type']>('cash');
   const [currency, setCurrency] = useState('USD');
   const [color, setColor] = useState(accountColors[0]);
+
+  const accountTypes = [
+    { value: 'cash', label: t('accounts.accountTypes.cash', locale) },
+    { value: 'bank', label: t('accounts.accountTypes.bank', locale) },
+    { value: 'card', label: t('accounts.accountTypes.card', locale) },
+    { value: 'savings', label: t('accounts.accountTypes.savings', locale) },
+    { value: 'investment', label: t('accounts.accountTypes.investment', locale) },
+    { value: 'other', label: t('accounts.accountTypes.other', locale) },
+  ];
 
   useEffect(() => {
     const data = storage.getData();
@@ -67,27 +70,27 @@ export default function EditAccountPage() {
     <div className="container mx-auto p-4 lg:p-8 max-w-2xl">
       <Link href={`/accounts/${accountId}`} className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
         <ArrowLeft className="h-4 w-4" />
-        Back to Account
+        {t('accounts.backToAccount', locale)}
       </Link>
 
       <Card>
         <CardHeader>
-          <CardTitle>Edit Account</CardTitle>
+          <CardTitle>{t('accounts.editAccount', locale)}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Account Name</label>
+              <label className="text-sm font-medium mb-2 block">{t('accounts.accountName', locale)}</label>
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g., Main Wallet, Savings Account"
+                placeholder={t('accounts.accountNamePlaceholder', locale)}
                 required
               />
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Account Type</label>
+              <label className="text-sm font-medium mb-2 block">{t('accounts.accountType', locale)}</label>
               <Select value={type} onChange={(e) => setType(e.target.value as Account['type'])} required>
                 {accountTypes.map((t) => (
                   <option key={t.value} value={t.value}>
@@ -98,7 +101,7 @@ export default function EditAccountPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Currency</label>
+              <label className="text-sm font-medium mb-2 block">{t('accounts.currency', locale)}</label>
               <Select value={currency} onChange={(e) => setCurrency(e.target.value)} required>
                 {CURRENCIES.map((c) => (
                   <option key={c.code} value={c.code}>
@@ -109,7 +112,7 @@ export default function EditAccountPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Color</label>
+              <label className="text-sm font-medium mb-2 block">{t('accounts.color', locale)}</label>
               <div className="flex gap-2 flex-wrap">
                 {accountColors.map((c) => (
                   <button
@@ -117,9 +120,14 @@ export default function EditAccountPage() {
                     type="button"
                     onClick={() => setColor(c)}
                     className={`h-10 w-10 rounded-full border-2 transition-all ${
-                      color === c ? 'border-foreground scale-110' : 'border-border'
+                      color === c ? 'border-foreground scale-110 ring-2 ring-offset-2 ring-offset-background' : 'border-border'
                     }`}
-                    style={{ backgroundColor: c }}
+                    style={{ 
+                      backgroundColor: c,
+                      ...(color === c ? { 
+                        boxShadow: `0 0 0 2px ${c}40, 0 0 0 4px var(--background), 0 0 0 6px ${c}60` 
+                      } : {})
+                    }}
                   />
                 ))}
               </div>
@@ -128,11 +136,11 @@ export default function EditAccountPage() {
             <div className="flex gap-2 pt-4">
               <Link href={`/accounts/${accountId}`} className="flex-1">
                 <Button type="button" variant="outline" className="w-full">
-                  Cancel
+                  {t('common.cancel', locale)}
                 </Button>
               </Link>
               <Button type="submit" className="flex-1">
-                Save Changes
+                {t('accounts.saveChanges', locale)}
               </Button>
             </div>
           </form>

@@ -2,21 +2,25 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, TrendingUp, TrendingDown, ArrowLeftRight, Filter } from 'lucide-react';
+import {Plus, TrendingUp, TrendingDown, ArrowLeftRight, Filter, Calendar, ArrowUpDown, Wallet} from 'lucide-react';
 import Link from 'next/link';
 import { storage } from '@/lib/storage';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
+import { useLocale } from '@/hooks/useLocale';
+import { t, getCategoryName } from '@/lib/i18n';
 import type { Transaction, Account, Category } from '@/types';
 
 export default function TransactionsPage() {
+  const { locale } = useLocale();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [filterType, setFilterType] = useState<string>('all');
   const [filterAccount, setFilterAccount] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<string>('date-desc');
 
   useEffect(() => {
     const updateData = () => {
@@ -34,56 +38,99 @@ export default function TransactionsPage() {
         filtered = filtered.filter(t => t.accountId === filterAccount || t.toAccountId === filterAccount);
       }
       
-      filtered = filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      // Apply sorting - default to creation order (newest first)
+      filtered = filtered.sort((a, b) => {
+        switch (sortBy) {
+          case 'date-desc':
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          case 'date-asc':
+            return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+          case 'amount-desc':
+            return b.amount - a.amount;
+          case 'amount-asc':
+            return a.amount - b.amount;
+          case 'type':
+            return a.type.localeCompare(b.type);
+          default:
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        }
+      });
+      
       setTransactions(filtered);
     };
     
     updateData();
     const interval = setInterval(updateData, 1000);
     return () => clearInterval(interval);
-  }, [filterType, filterAccount]);
+  }, [filterType, filterAccount, sortBy]);
 
   const getAccount = (id: string) => accounts.find(a => a.id === id);
   const getCategory = (id: string) => categories.find(c => c.id === id);
 
   return (
-    <div className="container mx-auto p-4 lg:p-8 max-w-7xl">
+    <div className="container mx-auto p-4 lg:p-8 max-w-7xl overflow-x-hidden">
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-3xl font-bold">Transactions</h1>
-        <Link href="/transactions/new">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Transaction
-          </Button>
-        </Link>
+        <h1 className="text-3xl font-bold">{t('transactions.title', locale)}</h1>
+        <div className="grid sm:flex gap-2">
+          <Link href="/planned">
+            <Button variant="outline">
+              <Calendar className="mr-2 h-4 w-4" />
+              {t('transactions.planned', locale)}
+            </Button>
+          </Link>
+          <Link href="/transactions/new">
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              {t('transactions.addTransaction', locale)}
+            </Button>
+          </Link>
+        </div>
       </div>
 
-      <div className="mb-6 flex flex-wrap gap-4">
+      <div className="mb-6 grid lg:flex flex-wrap gap-4">
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4 text-muted-foreground" />
           <Select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="w-40"
+            className="lg:w-xs"
           >
-            <option value="all">All Types</option>
-            <option value="income">Income</option>
-            <option value="expense">Expense</option>
-            <option value="transfer">Transfer</option>
+            <option value="all">{t('transactions.allTypes', locale)}</option>
+            <option value="income">{t('transactions.income', locale)}</option>
+            <option value="expense">{t('transactions.expense', locale)}</option>
+            <option value="transfer">{t('transactions.transfer', locale)}</option>
           </Select>
         </div>
-        <Select
-          value={filterAccount}
-          onChange={(e) => setFilterAccount(e.target.value)}
-          className="w-48"
-        >
-          <option value="all">All Accounts</option>
-          {accounts.map((account) => (
-            <option key={account.id} value={account.id}>
-              {account.name}
-            </option>
-          ))}
-        </Select>
+        <div className="flex items-center gap-2">
+          <Wallet className="h-4 w-4 text-muted-foreground" />
+          <Select
+            value={filterAccount}
+            onChange={(e) => setFilterAccount(e.target.value)}
+            className="lg:w-xs"
+          >
+            <option value="all">{t('transactions.allAccounts', locale)}</option>
+            {accounts.map((account) => (
+              <option key={account.id} value={account.id}>
+                {account.name}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div className="flex items-center gap-2">
+          <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm text-muted-foreground hidden sm:inline">{t('transactions.sortBy', locale)}:</span>
+          <Select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="lg:w-sm"
+          >
+            <option value="date-desc">{t('transactions.dateNewest', locale)}</option>
+            <option value="date-asc">{t('transactions.dateOldest', locale)}</option>
+            <option value="amount-desc">{t('transactions.amountHigh', locale)}</option>
+            <option value="amount-asc">{t('transactions.amountLow', locale)}</option>
+            <option value="type">{t('transactions.sortType', locale)}</option>
+          </Select>
+        </div>
       </div>
 
       {transactions.length === 0 ? (
@@ -134,10 +181,15 @@ export default function TransactionsPage() {
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="font-medium truncate">
-                              {transaction.note || category?.name || 'Transaction'}
+                            <div className="font-medium break-words">
+                              {category ? getCategoryName(category, locale) : t('transactions.transfer', locale)}
+                              {transaction.note && (
+                                <span className="text-muted-foreground text-sm ml-2 break-words">
+                                  {transaction.note}
+                                </span>
+                              )}
                             </div>
-                            <div className="text-sm text-muted-foreground">
+                            <div className="text-sm text-muted-foreground break-words">
                               {account?.name}
                               {isTransfer && transaction.toAccountId && (
                                 <>

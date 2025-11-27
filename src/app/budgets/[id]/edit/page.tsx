@@ -10,9 +10,12 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { useLocale } from '@/hooks/useLocale';
+import { t, getCategoryName } from '@/lib/i18n';
 import type { Budget, Category } from '@/types';
 
 export default function EditBudgetPage() {
+  const { locale } = useLocale();
   const params = useParams();
   const router = useRouter();
   const budgetId = params.id as string;
@@ -65,42 +68,42 @@ export default function EditBudgetPage() {
     <div className="container mx-auto p-4 lg:p-8 max-w-2xl">
       <Link href="/budgets" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
         <ArrowLeft className="h-4 w-4" />
-        Back to Budgets
+        {t('budgets.backToBudgets', locale)}
       </Link>
 
       <Card>
         <CardHeader>
-          <CardTitle>Edit Budget</CardTitle>
+          <CardTitle>{t('budgets.editBudget', locale)}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Category</label>
+              <label className="text-sm font-medium mb-2 block">{t('budgets.category', locale)}</label>
               <Select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required>
-                <option value="">Select category</option>
+                <option value="">{t('transactions.selectCategory', locale)}</option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
-                    {category.name}
+                    {getCategoryName(category, locale)}
                   </option>
                 ))}
               </Select>
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Amount</label>
+              <label className="text-sm font-medium mb-2 block">{t('transactions.amount', locale)}</label>
               <Input
                 type="number"
                 step="0.01"
                 min="0"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="0.00"
+                placeholder={t('transactions.amountPlaceholder', locale)}
                 required
               />
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Currency</label>
+              <label className="text-sm font-medium mb-2 block">{t('accounts.currency', locale)}</label>
               <Select value={currency} onChange={(e) => setCurrency(e.target.value)} required>
                 {CURRENCIES.map((c) => (
                   <option key={c.code} value={c.code}>
@@ -111,16 +114,16 @@ export default function EditBudgetPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Period</label>
+              <label className="text-sm font-medium mb-2 block">{t('budgets.period', locale)}</label>
               <Select value={period} onChange={(e) => setPeriod(e.target.value as Budget['period'])} required>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
+                <option value="weekly">{t('budgets.periods.weekly', locale)}</option>
+                <option value="monthly">{t('budgets.periods.monthly', locale)}</option>
+                <option value="yearly">{t('budgets.periods.yearly', locale)}</option>
               </Select>
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Start Date</label>
+              <label className="text-sm font-medium mb-2 block">{t('budgets.startDate', locale)}</label>
               <Input
                 type="date"
                 value={startDate}
@@ -130,7 +133,7 @@ export default function EditBudgetPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">End Date (optional)</label>
+              <label className="text-sm font-medium mb-2 block">{t('budgets.endDate', locale)}</label>
               <Input
                 type="date"
                 value={endDate}
@@ -141,11 +144,11 @@ export default function EditBudgetPage() {
             <div className="flex gap-2 pt-4">
               <Link href="/budgets" className="flex-1">
                 <Button type="button" variant="outline" className="w-full">
-                  Cancel
+                  {t('common.cancel', locale)}
                 </Button>
               </Link>
               <Button type="submit" className="flex-1">
-                Save Changes
+                {t('transactions.saveChanges', locale)}
               </Button>
             </div>
           </form>

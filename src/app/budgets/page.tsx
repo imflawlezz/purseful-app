@@ -10,9 +10,12 @@ import { formatCurrency, formatDate } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
+import { useLocale } from '@/hooks/useLocale';
+import { t, getCategoryName } from '@/lib/i18n';
 import type { Budget, Category, Transaction } from '@/types';
 
 export default function BudgetsPage() {
+  const { locale } = useLocale();
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -83,13 +86,13 @@ export default function BudgetsPage() {
   };
 
   return (
-    <div className="container mx-auto p-4 lg:p-8 max-w-7xl">
+    <div className="container mx-auto p-4 lg:p-8 max-w-7xl overflow-x-hidden">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Budgets</h1>
+        <h1 className="text-3xl font-bold">{t('budgets.title', locale)}</h1>
         <Link href="/budgets/new">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            Add Budget
+            {t('budgets.addBudget', locale)}
           </Button>
         </Link>
       </div>
@@ -98,12 +101,12 @@ export default function BudgetsPage() {
         <Card>
           <CardContent className="p-12 text-center">
             <Target className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-            <h3 className="text-xl font-semibold mb-2">No budgets yet</h3>
-            <p className="text-muted-foreground mb-6">Create budgets to track your spending</p>
+            <h3 className="text-xl font-semibold mb-2">{t('budgets.noBudgets', locale)}</h3>
+            <p className="text-muted-foreground mb-6">{t('budgets.createFirst', locale)}</p>
             <Link href="/budgets/new">
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
-                Create Budget
+                {t('budgets.createBudget', locale)}
               </Button>
             </Link>
           </CardContent>
@@ -136,7 +139,7 @@ export default function BudgetsPage() {
                           <Target className="h-6 w-6" style={{ color: category?.color || '#64748B' }} />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-lg">{category?.name || 'Unknown'}</h3>
+                          <h3 className="font-semibold text-lg break-words">{category ? getCategoryName(category, locale) : 'Unknown'}</h3>
                           <p className="text-sm text-muted-foreground capitalize">{budget.period}</p>
                         </div>
                       </div>
@@ -159,19 +162,19 @@ export default function BudgetsPage() {
                     <div className="space-y-3 flex-1">
                       <div>
                         <div className="flex items-center justify-between text-sm mb-1">
-                          <span className="text-muted-foreground">Budget</span>
+                          <span className="text-muted-foreground">{t('budgets.budget', locale)}</span>
                           <span className="font-semibold">
                             {formatCurrency(budget.amount, budget.currency)}
                           </span>
                         </div>
                         <div className="flex items-center justify-between text-sm mb-1">
-                          <span className="text-muted-foreground">Spent</span>
+                          <span className="text-muted-foreground">{t('budgets.spent', locale)}</span>
                           <span className={`font-semibold ${isOverBudget ? 'text-expense' : ''}`}>
                             {formatCurrency(spent, budget.currency)}
                           </span>
                         </div>
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Remaining</span>
+                          <span className="text-muted-foreground">{t('budgets.remaining', locale)}</span>
                           <span className={`font-semibold ${remaining < 0 ? 'text-expense' : 'text-income'}`}>
                             {formatCurrency(remaining, budget.currency)}
                           </span>
@@ -188,7 +191,7 @@ export default function BudgetsPage() {
                           />
                         </div>
                         <div className="text-xs text-muted-foreground mt-1 text-center">
-                          {percentage.toFixed(1)}% used
+                          {percentage.toFixed(1)}% {t('budgets.used', locale)}
                         </div>
                       </div>
                       
@@ -211,9 +214,9 @@ export default function BudgetsPage() {
           setDeleteDialogOpen(false);
           setBudgetToDelete(null);
         }}
-        title="Delete Budget"
+        title={t('budgets.deleteBudget', locale)}
       >
-        <p className="mb-4">Are you sure you want to delete this budget?</p>
+        <p className="mb-4">{t('budgets.deleteConfirm', locale)}</p>
         <div className="flex gap-2 justify-end">
           <Button
             variant="outline"
@@ -222,10 +225,10 @@ export default function BudgetsPage() {
               setBudgetToDelete(null);
             }}
           >
-            Cancel
+            {t('common.cancel', locale)}
           </Button>
           <Button variant="danger" onClick={confirmDelete}>
-            Delete
+            {t('common.delete', locale)}
           </Button>
         </div>
       </Dialog>

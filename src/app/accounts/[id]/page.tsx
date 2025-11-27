@@ -10,9 +10,12 @@ import { formatCurrency, formatDate } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
+import { useLocale } from '@/hooks/useLocale';
+import { t, getCategoryName } from '@/lib/i18n';
 import type { Account, Transaction } from '@/types';
 
 export default function AccountDetailPage() {
+  const { locale } = useLocale();
   const params = useParams();
   const router = useRouter();
   const accountId = params.id as string;
@@ -62,7 +65,7 @@ export default function AccountDetailPage() {
     <div className="container mx-auto p-4 lg:p-8 max-w-4xl">
       <Link href="/accounts" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
         <ArrowLeft className="h-4 w-4" />
-        Back to Accounts
+        {t('accounts.backToAccounts', locale)}
       </Link>
 
       <Card className="mb-6">
@@ -87,19 +90,19 @@ export default function AccountDetailPage() {
               <Link href={`/accounts/${accountId}/edit`}>
                 <Button variant="outline">
                   <Edit className="mr-2 h-4 w-4" />
-                  Edit
+                  {t('common.edit', locale)}
                 </Button>
               </Link>
               <Button variant="danger" onClick={() => setDeleteDialogOpen(true)}>
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                {t('common.delete', locale)}
               </Button>
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border">
+          <div className="grid sm:grid-cols-3 gap-4 pt-4 border-t border-border">
             <div>
-              <div className="text-sm text-muted-foreground mb-1">Balance</div>
+              <div className="text-sm text-muted-foreground mb-1">{t('accounts.balance', locale)}</div>
               <div className="text-2xl font-bold">
                 {formatCurrency(account.balance, account.currency)}
               </div>
@@ -113,13 +116,13 @@ export default function AccountDetailPage() {
               )}
             </div>
             <div>
-              <div className="text-sm text-muted-foreground mb-1">Income</div>
+              <div className="text-sm text-muted-foreground mb-1">{t('accounts.income', locale)}</div>
               <div className="text-2xl font-bold text-income">
                 {formatCurrency(income, mainCurrency)}
               </div>
             </div>
             <div>
-              <div className="text-sm text-muted-foreground mb-1">Expense</div>
+              <div className="text-sm text-muted-foreground mb-1">{t('accounts.expense', locale)}</div>
               <div className="text-2xl font-bold text-expense">
                 {formatCurrency(expense, mainCurrency)}
               </div>
@@ -129,11 +132,11 @@ export default function AccountDetailPage() {
       </Card>
 
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Transactions</h2>
+        <h2 className="text-2xl font-bold">{t('accounts.transactions', locale)}</h2>
         <Link href={`/transactions/new?accountId=${accountId}`}>
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            Add Transaction
+            {t('transactions.addTransaction', locale)}
           </Button>
         </Link>
       </div>
@@ -141,10 +144,10 @@ export default function AccountDetailPage() {
       {transactions.length === 0 ? (
         <Card>
           <CardContent className="p-12 text-center">
-            <p className="text-muted-foreground">No transactions yet</p>
+            <p className="text-muted-foreground">{t('transactions.noTransactions', locale)}</p>
             <Link href={`/transactions/new?accountId=${accountId}`}>
               <Button className="mt-4" variant="outline">
-                Add Transaction
+                {t('transactions.addTransaction', locale)}
               </Button>
             </Link>
           </CardContent>
@@ -176,7 +179,7 @@ export default function AccountDetailPage() {
                           )}
                         </div>
                         <div>
-                          <div className="font-medium">{transaction.note || 'Transaction'}</div>
+                          <div className="font-medium">{transaction.note || t('common.transaction', locale)}</div>
                           <div className="text-sm text-muted-foreground">
                             {formatDate(transaction.date)}
                           </div>
@@ -200,15 +203,15 @@ export default function AccountDetailPage() {
       <Dialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
-        title="Delete Account"
+        title={t('accounts.deleteAccount', locale)}
       >
-        <p className="mb-4">Are you sure you want to delete this account? All related transactions will also be deleted.</p>
+        <p className="mb-4">{t('accounts.deleteConfirm', locale)}</p>
         <div className="flex gap-2 justify-end">
           <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-            Cancel
+            {t('common.cancel', locale)}
           </Button>
           <Button variant="danger" onClick={handleDelete}>
-            Delete
+            {t('common.delete', locale)}
           </Button>
         </div>
       </Dialog>
