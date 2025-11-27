@@ -64,6 +64,7 @@ export const analytics = {
 
   /**
    * Get number of occurrences for a planned transaction in a period
+   * This checks if each specific occurrence date actually falls within the time window
    */
   getOccurrencesInPeriod(
     planned: PlannedTransaction,
@@ -73,20 +74,57 @@ export const analytics = {
     if (planned.frequency === 'once') {
       const plannedDate = new Date(planned.startDate);
       plannedDate.setHours(0, 0, 0, 0);
-      if (plannedDate >= startDate && plannedDate <= endDate) {
+      const windowStart = new Date(startDate);
+      windowStart.setHours(0, 0, 0, 0);
+      const windowEnd = new Date(endDate);
+      windowEnd.setHours(23, 59, 59, 999);
+      if (plannedDate >= windowStart && plannedDate <= windowEnd) {
         return 1;
       }
       return 0;
     }
 
     let count = 0;
-    let currentDate = new Date(Math.max(new Date(planned.startDate).getTime(), startDate.getTime()));
+    // Start from the planned transaction's start date
+    let currentDate = new Date(planned.startDate);
+    currentDate.setHours(0, 0, 0, 0);
     const plannedEnd = planned.endDate ? new Date(planned.endDate) : null;
+    if (plannedEnd) {
+      plannedEnd.setHours(23, 59, 59, 999);
+    }
+    const windowStart = new Date(startDate);
+    windowStart.setHours(0, 0, 0, 0);
+    const windowEnd = new Date(endDate);
+    windowEnd.setHours(23, 59, 59, 999);
 
-    while (currentDate <= endDate) {
+    // Find the first occurrence that falls within the window
+    while (currentDate < windowStart) {
+      // Move to next occurrence
+      if (planned.frequency === 'daily') {
+        currentDate.setDate(currentDate.getDate() + 1);
+      } else if (planned.frequency === 'weekly') {
+        currentDate.setDate(currentDate.getDate() + 7);
+      } else if (planned.frequency === 'monthly') {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+      } else if (planned.frequency === 'yearly') {
+        currentDate.setFullYear(currentDate.getFullYear() + 1);
+      }
+      
+      // Check if we've exceeded the planned end date
+      if (plannedEnd && currentDate > plannedEnd) {
+        return 0;
+      }
+    }
+
+    // Now count all occurrences that fall within the window
+    while (currentDate <= windowEnd) {
+      // Check if we've exceeded the planned end date
       if (plannedEnd && currentDate > plannedEnd) break;
-
-      count++;
+      
+      // Only count if this occurrence is within the window
+      if (currentDate >= windowStart && currentDate <= windowEnd) {
+        count++;
+      }
 
       // Move to next occurrence
       if (planned.frequency === 'daily') {
