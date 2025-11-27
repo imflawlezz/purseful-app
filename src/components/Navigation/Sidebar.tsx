@@ -8,22 +8,25 @@ import { storage } from '@/lib/storage';
 import { formatCurrency } from '@/lib/utils';
 import { exchangeRates } from '@/lib/exchange-rates';
 import { useEffect, useState } from 'react';
-
-const navItems = [
-  { href: '/', icon: Home, label: 'Home' },
-  { href: '/transactions', icon: TrendingUp, label: 'Transactions' },
-  { href: '/budgets', icon: Target, label: 'Budgets' },
-  { href: '/analytics', icon: BarChart3, label: 'Analytics' },
-  { href: '/accounts', icon: Wallet, label: 'Accounts' },
-  { href: '/planned', icon: Calendar, label: 'Planned' },
-  { href: '/categories', icon: Tag, label: 'Categories' },
-  { href: '/settings', icon: Settings, label: 'Settings' },
-];
+import { useLocale } from '@/hooks/useLocale';
+import { t } from '@/lib/i18n';
 
 export function Sidebar() {
+  const { locale } = useLocale();
   const pathname = usePathname();
   const [accounts, setAccounts] = useState(storage.getData().accounts);
   const [mainCurrency, setMainCurrency] = useState(storage.getData().settings.mainCurrency);
+
+  const navItems = [
+    { href: '/', icon: Home, label: t('nav.home', locale) },
+    { href: '/transactions', icon: TrendingUp, label: t('nav.transactions', locale) },
+    { href: '/budgets', icon: Target, label: t('nav.budgets', locale) },
+    { href: '/analytics', icon: BarChart3, label: t('nav.analytics', locale) },
+    { href: '/accounts', icon: Wallet, label: t('nav.accounts', locale) },
+    { href: '/planned', icon: Calendar, label: t('nav.planned', locale) },
+    { href: '/categories', icon: Tag, label: t('nav.categories', locale) },
+    { href: '/settings', icon: Settings, label: t('nav.settings', locale) },
+  ];
 
   useEffect(() => {
     const updateData = () => {
@@ -47,13 +50,13 @@ export function Sidebar() {
   }, 0);
 
   return (
-    <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-border lg:bg-card">
-      <div className="flex flex-col h-full">
-        <div className="p-6 border-b border-border">
-          <h1 className="text-2xl font-bold">Purseful</h1>
+    <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-border lg:bg-card lg:fixed lg:left-0 lg:top-0 lg:h-screen lg:z-40">
+      <div className="flex flex-col h-full overflow-y-auto">
+        <div className="p-6 border-b border-border flex-shrink-0">
+          <h1 className="text-2xl font-bold">{t('analytics.appName', locale)}</h1>
         </div>
         
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -76,10 +79,10 @@ export function Sidebar() {
           })}
         </nav>
 
-        <div className="p-4 border-t border-border space-y-4">
+        <div className="p-4 border-t border-border space-y-4 flex-shrink-0">
           <div>
-            <h3 className="text-sm font-semibold mb-2 px-3">Accounts</h3>
-            <div className="space-y-1 max-h-64 overflow-y-auto">
+            <h3 className="text-sm font-semibold mb-2 px-3">{t('nav.accounts', locale)}</h3>
+            <div className="space-y-1 max-h-64 overflow-y-auto min-h-0">
               {accounts.map((account) => (
                 <Link
                   key={account.id}
@@ -109,7 +112,7 @@ export function Sidebar() {
           <div className="pt-4 border-t border-border">
             <div className="px-3 space-y-1">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Total Balance</span>
+                <span className="text-muted-foreground">{t('dashboard.totalBalance', locale)}</span>
                 <span className="font-bold text-lg">
                   {formatCurrency(totalInMainCurrency, mainCurrency)}
                 </span>

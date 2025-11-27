@@ -8,32 +8,35 @@ import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { Dialog } from '@/components/ui/Dialog';
 import { Calendar, Tag } from 'lucide-react';
-
-const mainTabs = [
-  { href: '/', icon: Home, label: 'Home' },
-  { href: '/analytics', icon: BarChart3, label: 'Analytics' },
-  { href: '/transactions', icon: TrendingUp, label: 'Transactions' },
-  { href: '/budgets', icon: Target, label: 'Budgets' },
-];
+import { useLocale } from '@/hooks/useLocale';
+import { t } from '@/lib/i18n';
 
 import { BarChart3 } from 'lucide-react';
 
-const otherTabs = [
-  { href: '/accounts', icon: Wallet, label: 'Accounts' },
-  { href: '/planned', icon: Calendar, label: 'Planned' },
-  { href: '/categories', icon: Tag, label: 'Categories' },
-  { href: '/settings', icon: Settings, label: 'Settings' },
-];
-
 export function TabBar() {
+  const { locale } = useLocale();
   const pathname = usePathname();
   const [othersOpen, setOthersOpen] = useState(false);
+
+  const mainTabs = [
+    { href: '/', icon: Home, label: t('nav.home', locale) },
+    { href: '/analytics', icon: BarChart3, label: t('nav.analytics', locale) },
+    { href: '/transactions', icon: TrendingUp, label: t('nav.transactions', locale) },
+    { href: '/budgets', icon: Target, label: t('nav.budgets', locale) },
+  ];
+
+  const otherTabs = [
+    { href: '/accounts', icon: Wallet, label: t('nav.accounts', locale) },
+    { href: '/planned', icon: Calendar, label: t('nav.planned', locale) },
+    { href: '/categories', icon: Tag, label: t('nav.categories', locale) },
+    { href: '/settings', icon: Settings, label: t('nav.settings', locale) },
+  ];
 
   const isOthersActive = otherTabs.some(tab => pathname === tab.href || pathname.startsWith(tab.href + '/'));
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-sm lg:hidden px-4 pb-safe">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-sm lg:hidden px-4 pb-safe safe-area-inset-bottom">
         <div className="flex h-16 items-center justify-around gap-2">
           {mainTabs.map((tab) => {
             const Icon = tab.icon;
@@ -78,7 +81,7 @@ export function TabBar() {
               />
             )}
             <MoreHorizontal className="h-5 w-5" />
-            <span className="text-xs font-medium">More</span>
+            <span className="text-xs font-medium">{t('nav.more', locale)}</span>
           </button>
         </div>
       </nav>
@@ -86,7 +89,7 @@ export function TabBar() {
       <Dialog
         open={othersOpen}
         onClose={() => setOthersOpen(false)}
-        title="More"
+        title={t('nav.more', locale)}
         className="max-w-sm"
       >
         <div className="space-y-2">
