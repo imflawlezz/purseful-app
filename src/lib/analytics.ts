@@ -187,5 +187,47 @@ export const analytics = {
 
     return results;
   },
+
+  /**
+   * Get actual transaction data for a period
+   */
+  getTransactionData(startDate: Date, endDate: Date): {
+    income: number;
+    expense: number;
+    incomeByCategory: Record<string, number>;
+    expenseByCategory: Record<string, number>;
+  } {
+    const data = storage.getData();
+    const mainCurrency = data.settings.mainCurrency;
+    const result = {
+      income: 0,
+      expense: 0,
+      incomeByCategory: {} as Record<string, number>,
+      expenseByCategory: {} as Record<string, number>,
+    };
+
+    data.transactions
+      .filter(t => {
+        const tDate = new Date(t.date);
+        return tDate >= startDate && tDate <= endDate;
+      })
+      .forEach(t => {
+        const amount = exchangeRates.convert(t.amount, t.currency, mainCurrency);
+        
+        if (t.type === 'income') {
+          result.income += amount;
+          if (t.categoryId) {
+            result.incomeByCategory[t.categoryId] = (result.incomeByCategory[t.categoryId] || 0) + amount;
+          }
+        } else if (t.type === 'expense') {
+          result.expense += amount;
+          if (t.categoryId) {
+            result.expenseByCategory[t.categoryId] = (result.expenseByCategory[t.categoryId] || 0) + amount;
+          }
+        }
+      });
+
+    return result;
+  },
 };
 
