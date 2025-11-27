@@ -93,6 +93,11 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 /* Smooth transitions */
@@ -119,4 +124,110 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--foreground);
+}
+
+/* Mobile keyboard handling */
+@supports (padding: max(0px)) {
+  .pb-safe {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* Prevent layout shift when keyboard opens */
+@media (max-width: 1024px) {
+  nav.fixed {
+    position: fixed !important;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+  
+  /* Ensure inputs don't cause viewport issues */
+  input, textarea, select {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+  
+  /* Mobile text size optimizations - decreased sizes */
+  h1 {
+    font-size: 1.5rem !important; /* 24px */
+    line-height: 1.2;
+  }
+  
+  h2 {
+    font-size: 1.25rem !important; /* 20px */
+    line-height: 1.3;
+  }
+  
+  h3 {
+    font-size: 1.125rem !important; /* 18px */
+    line-height: 1.4;
+  }
+  
+  /* Smaller body text on mobile */
+  body {
+    font-size: 0.9375rem !important; /* 15px */
+  }
+  
+  .text-sm {
+    font-size: 0.8125rem !important; /* 13px */
+  }
+  
+  .text-xs {
+    font-size: 0.75rem !important; /* 12px */
+  }
+  
+  /* Button text */
+  button, .btn {
+    font-size: 0.875rem !important; /* 14px */
+  }
+  
+  /* Prefer multiline over truncation */
+  .break-words {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  
+  /* Ensure cards and containers allow text wrapping */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Better spacing for mobile */
+  .space-y-2 > * + * {
+    margin-top: 0.75rem;
+  }
+  
+  /* Text in cards should wrap */
+  [class*="Card"] {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  /* Prevent overflow */
+  .container {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  
+  /* Ensure flex items don't overflow */
+  .flex {
+    min-width: 0;
+  }
+  
+  /* Grid items */
+  .grid > * {
+    min-width: 0;
+  }
+}
+
+/* Global overflow prevention */
+* {
+  box-sizing: border-box;
+}
+
+.container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
