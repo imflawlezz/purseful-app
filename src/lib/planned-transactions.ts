@@ -26,14 +26,14 @@ export const plannedTransactions = {
 
       // Check if this is a "once" transaction that should be executed
       if (planned.frequency === 'once') {
-        if (startDate <= today) {
+        if (startDate <= today && !planned.lastProcessedDate) {
           // Check if transaction already exists
           const exists = data.transactions.some(
             t => t.date === planned.startDate &&
                  t.accountId === planned.accountId &&
                  t.categoryId === planned.categoryId &&
                  t.type === planned.type &&
-                 t.amount === planned.amount
+                 Math.abs(t.amount - planned.amount) < 0.01
           );
 
           if (!exists) {
@@ -54,14 +54,34 @@ export const plannedTransactions = {
             transactionsToCreate.push(transaction);
             plannedToRemove.push(planned.id);
           } else {
-            // Transaction already exists, remove planned
+            // Transaction already exists, mark as processed and remove
+            storage.updatePlannedTransaction(planned.id, { lastProcessedDate: planned.startDate });
             plannedToRemove.push(planned.id);
           }
         }
       } else {
-        // For recurring transactions, process each occurrence up to today
+        // For recurring transactions, process from lastProcessedDate (or startDate) to today
         if (startDate <= today) {
-          let currentDate = new Date(startDate);
+          // Start from last processed date + 1 occurrence, or from startDate if never processed
+          let currentDate = planned.lastProcessedDate 
+            ? new Date(planned.lastProcessedDate) 
+            : new Date(startDate);
+          
+          // If we have a lastProcessedDate, move to the next occurrence
+          if (planned.lastProcessedDate) {
+            if (planned.frequency === 'daily') {
+              currentDate.setDate(currentDate.getDate() + 1);
+            } else if (planned.frequency === 'weekly') {
+              currentDate.setDate(currentDate.getDate() + 7);
+            } else if (planned.frequency === 'monthly') {
+              currentDate.setMonth(currentDate.getMonth() + 1);
+            } else if (planned.frequency === 'yearly') {
+              currentDate.setFullYear(currentDate.getFullYear() + 1);
+            }
+          }
+          
+          currentDate.setHours(0, 0, 0, 0);
+          let lastProcessed = planned.lastProcessedDate ? new Date(planned.lastProcessedDate) : null;
           
           while (currentDate <= today) {
             // Check if we haven't exceeded end date
@@ -78,7 +98,7 @@ export const plannedTransactions = {
                        t.accountId === planned.accountId &&
                        t.categoryId === planned.categoryId &&
                        t.type === planned.type &&
-                       Math.abs(t.amount - planned.amount) < 0.01; // Allow small floating point differences
+                       Math.abs(t.amount - planned.amount) < 0.01;
               }
             );
 
@@ -98,6 +118,9 @@ export const plannedTransactions = {
               };
               transactionsToCreate.push(transaction);
             }
+            
+            // Update last processed date
+            lastProcessed = new Date(currentDate);
 
             // Move to next occurrence based on frequency
             if (planned.frequency === 'daily') {
@@ -109,6 +132,13 @@ export const plannedTransactions = {
             } else if (planned.frequency === 'yearly') {
               currentDate.setFullYear(currentDate.getFullYear() + 1);
             }
+          }
+          
+          // Update last processed date if we processed anything
+          if (lastProcessed && lastProcessed.getTime() !== (planned.lastProcessedDate ? new Date(planned.lastProcessedDate).getTime() : 0)) {
+            storage.updatePlannedTransaction(planned.id, { 
+              lastProcessedDate: lastProcessed.toISOString().split('T')[0] 
+            });
           }
         }
       }
