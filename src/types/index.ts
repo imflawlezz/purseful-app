@@ -48,6 +48,7 @@ export interface PlannedTransaction {
   frequency: 'daily' | 'weekly' | 'monthly' | 'yearly' | 'once';
   note?: string;
   toAccountId?: string;
+  lastProcessedDate?: string; // Track last date processed to prevent duplicates
   createdAt: string;
   updatedAt: string;
 }
@@ -74,8 +75,23 @@ export interface ExchangeRate {
 export interface Settings {
   mainCurrency: string;
   theme: 'light' | 'dark' | 'system';
+  locale: 'en' | 'pl' | 'ru';
   exchangeRates: ExchangeRate[];
   lastExchangeRateUpdate?: string;
+}
+
+export interface TransactionTemplate {
+  id: string;
+  name: string;
+  accountId: string;
+  categoryId: string;
+  type: TransactionType;
+  amount: number;
+  currency: string;
+  note?: string;
+  toAccountId?: string; // For transfers
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AppData {
@@ -84,6 +100,7 @@ export interface AppData {
   transactions: Transaction[];
   plannedTransactions: PlannedTransaction[];
   budgets: Budget[];
+  transactionTemplates: TransactionTemplate[];
   settings: Settings;
 }
 
