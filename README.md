@@ -1,3 +1,5 @@
+> **Archived.** This project is no longer maintained and is kept for reference only.
+
 # Purseful
 
 Purseful is a finance tracking and budget planning app that runs fully offline thanks to its PWA architecture. It is built with Next.js, Tailwind CSS, and TypeScript.
